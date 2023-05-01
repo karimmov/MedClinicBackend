@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using NuGet.Protocol;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace clinic.Controllers
 {
@@ -19,15 +20,13 @@ namespace clinic.Controllers
         [HttpGet]
         public async Task<ActionResult<Client>> GetClient()
         {
-            var id = User.Identity.Name;
+            var id = User.Claims.Where(t => t.Type == "ClientId").Select(t => t.Value).Single();
 
             if (_context.Clients == null) return NotFound();
 
             var client = await _context.Clients.FindAsync(int.Parse(id));
 
             if (client == null) return NotFound();
-
-            Console.WriteLine(client.Name);
 
             return Ok(client.ToJson());
         }
@@ -45,6 +44,7 @@ namespace clinic.Controllers
         //    return client;
         //}
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult> PostClient(string name, string email, string password)
         {
@@ -54,12 +54,41 @@ namespace clinic.Controllers
             await _context.Clients.AddAsync(new Client()
             {
                 Clientid = id,
-                Name = name,
+                Clientname = name,
                 Email = email,
-                Passwordhash = password
+                Passwordhash = password,    
             });
             await _context.SaveChangesAsync();
             return Ok();
-        } 
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutClient(int id, Client client)
+        {
+            _context.Entry(client).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ClientExist(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return Ok();
+        }
+
+        private bool ClientExist(int id)
+        {
+            return (_context.Clients?.Any(e => e.Clientid == id)).GetValueOrDefault();
+        }
     }
 }

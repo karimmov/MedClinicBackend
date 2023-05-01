@@ -116,9 +116,11 @@ public partial class MedicalClinicContext : DbContext
             entity.HasIndex(e => e.Phonenumber, "clients_phonenumber_key").IsUnique();
 
             entity.Property(e => e.Clientid).HasColumnName("clientid");
-            entity.Property(e => e.Name)
+            entity.Property(e => e.BirthDate).HasDefaultValueSql("'-infinity'::date");
+            entity.Property(e => e.Clientname)
                 .HasMaxLength(70)
                 .HasColumnName("clientname");
+            entity.Property(e => e.Email).HasDefaultValueSql("''::text");
             entity.Property(e => e.Passwordhash)
                 .HasMaxLength(100)
                 .HasColumnName("passwordhash");
@@ -136,6 +138,7 @@ public partial class MedicalClinicContext : DbContext
             entity.HasIndex(e => e.Phonenumber, "employees_phonenumber_key").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Email).HasDefaultValueSql("''::text");
             entity.Property(e => e.Office).HasColumnName("office");
             entity.Property(e => e.Passwordhash)
                 .HasMaxLength(100)

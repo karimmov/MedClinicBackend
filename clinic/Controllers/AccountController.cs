@@ -1,6 +1,6 @@
 ﻿using clinic.Model;
 using clinic.Model.Tables;
-using Microsoft.AspNetCore.Http;    
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System;
@@ -66,7 +66,7 @@ namespace clinic.Controllers
             {
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimsIdentity.DefaultNameClaimType, person.Clientid.ToString()),
+                    new Claim("ClientId", person.Clientid.ToString()),
                 };
                 //ClaimsIdentity claimsIdentity =
                 //new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
