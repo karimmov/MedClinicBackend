@@ -20,6 +20,4 @@ public partial class Analysistype
     public virtual ICollection<Analysisresult> Analysisresults { get; } = new List<Analysisresult>();
 
     public virtual Analysiscategory CategoryNavigation { get; set; } = null!;
-
-    public virtual ICollection<Request> Requests { get; } = new List<Request>();
 }

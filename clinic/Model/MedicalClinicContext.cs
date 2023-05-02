@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using clinic.Model.Tables;
 using Microsoft.EntityFrameworkCore;
+using clinic.Model.Tables;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 
 namespace clinic.Model;
 
@@ -26,17 +27,18 @@ public partial class MedicalClinicContext : DbContext
 
     public virtual DbSet<Client> Clients { get; set; }
 
-    public virtual DbSet<Employee> Employees { get; set; }
-
     public virtual DbSet<Office> Offices { get; set; }
 
-    public virtual DbSet<Request> Requests { get; set; }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=medical-clinic;Username=postgres;Password=LIRESU42");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasPostgresEnum("requeststatus", new[] { "Выполняется", "Результаты готовы", "Ожидается посещение" });
+
+        modelBuilder.UseIdentityAlwaysColumns();
+
         modelBuilder.Entity<Analysiscategory>(entity =>
         {
             entity.HasKey(e => e.Categoryid).HasName("analysiscategory_pkey");
@@ -74,7 +76,8 @@ public partial class MedicalClinicContext : DbContext
             entity.Property(e => e.Analysistype).HasColumnName("analysistype");
             entity.Property(e => e.Client).HasColumnName("client");
             entity.Property(e => e.Date).HasColumnName("date");
-            entity.Property(e => e.Time).HasColumnName("time");
+            entity.Property(e => e.Office).HasColumnName("office");
+            entity.Property(e => e.Status).HasColumnName("status");
 
             entity.HasOne(d => d.AnalysistypeNavigation).WithMany(p => p.Analysisresults)
                 .HasForeignKey(d => d.Analysistype)
@@ -85,6 +88,10 @@ public partial class MedicalClinicContext : DbContext
                 .HasForeignKey(d => d.Client)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("analysisresult_client_fkey");
+
+            entity.HasOne(d => d.OfficeNavigation).WithMany(p => p.Analysisresults)
+                .HasForeignKey(d => d.Office)
+                .HasConstraintName("analysisresult_office_fkey");
         });
 
         modelBuilder.Entity<Analysistype>(entity =>
@@ -129,30 +136,6 @@ public partial class MedicalClinicContext : DbContext
                 .HasColumnName("phonenumber");
         });
 
-        modelBuilder.Entity<Employee>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("employees_pkey");
-
-            entity.ToTable("employees");
-
-            entity.HasIndex(e => e.Phonenumber, "employees_phonenumber_key").IsUnique();
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Email).HasDefaultValueSql("''::text");
-            entity.Property(e => e.Office).HasColumnName("office");
-            entity.Property(e => e.Passwordhash)
-                .HasMaxLength(100)
-                .HasColumnName("passwordhash");
-            entity.Property(e => e.Phonenumber)
-                .HasMaxLength(11)
-                .HasColumnName("phonenumber");
-
-            entity.HasOne(d => d.OfficeNavigation).WithMany(p => p.Employees)
-                .HasForeignKey(d => d.Office)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("employees_office_fkey");
-        });
-
         modelBuilder.Entity<Office>(entity =>
         {
             entity.HasKey(e => e.Officeid).HasName("offices_pkey");
@@ -165,33 +148,9 @@ public partial class MedicalClinicContext : DbContext
                 .HasColumnName("officeaddress");
         });
 
-        modelBuilder.Entity<Request>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("requests_pkey");
-
-            entity.ToTable("requests");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Analysistype).HasColumnName("analysistype");
-            entity.Property(e => e.Client).HasColumnName("client");
-            entity.Property(e => e.Office).HasColumnName("office");
-            entity.Property(e => e.Receptiondate).HasColumnName("receptiondate");
-
-            entity.HasOne(d => d.AnalysistypeNavigation).WithMany(p => p.Requests)
-                .HasForeignKey(d => d.Analysistype)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("requests_analysistype_fkey");
-
-            entity.HasOne(d => d.ClientNavigation).WithMany(p => p.Requests)
-                .HasForeignKey(d => d.Client)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("requests_client_fkey");
-
-            entity.HasOne(d => d.OfficeNavigation).WithMany(p => p.Requests)
-                .HasForeignKey(d => d.Office)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("requests_office_fkey");
-        });
+        modelBuilder.Entity<Analysisresult>()
+            .Property(p => p.Id)
+            .ValueGeneratedOnAdd();
 
         OnModelCreatingPartial(modelBuilder);
     }

@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.Extensions.Options;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using clinic;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
+using clinic.Model.Tables;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,6 +66,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddControllersWithViews();
+
 
 var app = builder.Build();
 

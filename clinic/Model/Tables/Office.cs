@@ -9,7 +9,5 @@ public partial class Office
 
     public string Officeaddress { get; set; } = null!;
 
-    public virtual ICollection<Employee> Employees { get; } = new List<Employee>();
-
-    public virtual ICollection<Request> Requests { get; } = new List<Request>();
+    public virtual ICollection<Analysisresult> Analysisresults { get; } = new List<Analysisresult>();
 }
