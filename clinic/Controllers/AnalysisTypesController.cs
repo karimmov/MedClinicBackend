@@ -45,8 +45,7 @@ namespace clinic.Controllers
         }
 
 
-        // GET: api/AnalysisTypes/5
-        /*[HttpGet("{id}")]
+        [HttpGet("/api/GetAnalysisTypeById")]
         public async Task<ActionResult<Analysistype>> GetAnalysistype(int id)
         {
             if (_context.Analysistypes == null)
@@ -61,7 +60,7 @@ namespace clinic.Controllers
             }
 
             return analysistype;
-        }*/
+        }
 
         // PUT: api/AnalysisTypes/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

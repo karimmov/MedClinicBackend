@@ -29,28 +29,20 @@ namespace clinic.Controllers
         {
             List<Analysisresult> results = new List<Analysisresult>();
             var clientId = int.Parse(User.Claims.Where(c => c.Type == "ClientId").Select(c => c.Value).FirstOrDefault());
-            foreach (var item in analyzesId)
+            for (int i = 0; i < analyzesId.Length; i++)
             {
                 results.Add(new Analysisresult
                 {
                     Status = "Ожидается посещение",
                     Client = clientId,
                     Date = DateOnly.FromDateTime(DateTime.Now),
-                }); 
-            }
+                    Analysistype = analyzesId[i],
+                    AnalysistypeNavigation = _context.Analysistypes.Find(analyzesId[i])
+                });
+            };
             await _context.Analysisresults.AddRangeAsync(results);
             _context.SaveChanges();
             return Ok();
         }
-
-        /*private int GetLastResultId()
-        {
-            var lastResult = _context.Analysisresults.To;
-            if (lastResult != null)
-            {
-                return lastResult.Id;
-            }
-            return 0;
-        }*/
     }
 }

@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
-using clinic.Model.Tables;
+using clinic;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace clinic.Model.Tables
+namespace clinic
 {
     public class AuthOptions
     {

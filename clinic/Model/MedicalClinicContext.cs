@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
 using clinic.Model.Tables;
-using Microsoft.EntityFrameworkCore.ValueGeneration;
+using Microsoft.EntityFrameworkCore;
 
 namespace clinic.Model;
 
@@ -31,13 +30,12 @@ public partial class MedicalClinicContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=medical-clinic;Username=postgres;Password=LIRESU42");
+        => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=medical-clinic;Username=postgres;Password=LIRESU42;Include Error Detail=true");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasPostgresEnum("requeststatus", new[] { "Выполняется", "Результаты готовы", "Ожидается посещение" });
 
-        modelBuilder.UseIdentityAlwaysColumns();
 
         modelBuilder.Entity<Analysiscategory>(entity =>
         {
@@ -71,13 +69,19 @@ public partial class MedicalClinicContext : DbContext
 
             entity.ToTable("analysisresult");
 
-            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Id)
+                .ValueGeneratedOnAdd()
+                .UseIdentityAlwaysColumn()
+                .HasColumnName("id");
             entity.Property(e => e.Analysisresult1).HasColumnName("analysisresult");
             entity.Property(e => e.Analysistype).HasColumnName("analysistype");
             entity.Property(e => e.Client).HasColumnName("client");
             entity.Property(e => e.Date).HasColumnName("date");
             entity.Property(e => e.Office).HasColumnName("office");
-            entity.Property(e => e.Status).HasColumnName("status");
+            entity.Property(e => e.Status)
+                .HasMaxLength(50)
+                .HasDefaultValueSql("'Ожидается посещение'::requeststatus")
+                .HasColumnName("status");
 
             entity.HasOne(d => d.AnalysistypeNavigation).WithMany(p => p.Analysisresults)
                 .HasForeignKey(d => d.Analysistype)
@@ -147,10 +151,6 @@ public partial class MedicalClinicContext : DbContext
                 .HasMaxLength(200)
                 .HasColumnName("officeaddress");
         });
-
-        modelBuilder.Entity<Analysisresult>()
-            .Property(p => p.Id)
-            .ValueGeneratedOnAdd();
 
         OnModelCreatingPartial(modelBuilder);
     }
