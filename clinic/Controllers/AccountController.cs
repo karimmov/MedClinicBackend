@@ -24,13 +24,13 @@ namespace clinic.Controllers
         }
 
         [Authorize]
-        [HttpGet("/checkIsAuthenticated")]
+        [HttpGet("/api/checkIsAuthenticated")]
         public IActionResult CheckIsAuthenticated()
         {
             return Ok();
         }
 
-        [HttpPost("/authenticate")]
+        [HttpPost("/api/authenticate")]
         public IActionResult Authenticate(string username, string password)
         {
             var identity = GetIdentity(username, password);
