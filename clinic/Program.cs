@@ -89,4 +89,4 @@ app.MapControllers();
 
 app.Run();
 
-//Scaffold-DbContext "Host=localhost;Port=5432;Database=medical-clinic;Username=postgres;Password=LIRESU42" Npgsql.EntityFrameworkCore.PostgreSQL
+//Scaffold-DbContext "Host=176.124.192.224;Port=5432;Database=medical-clinic;Username=postgres;Password=postgres" Npgsql.EntityFrameworkCore.PostgreSQL

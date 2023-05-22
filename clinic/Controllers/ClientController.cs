@@ -1,11 +1,9 @@
 ﻿using clinic.Model.Tables;
 using clinic.Model;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using NuGet.Protocol;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace clinic.Controllers
 {
