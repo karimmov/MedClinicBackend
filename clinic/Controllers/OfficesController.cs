@@ -21,5 +21,13 @@ namespace clinic.Controllers
         {
             return await _context.Offices.ToListAsync();
         }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<string>> GetOfficeName(int id)
+        {
+            var office = await _context.Offices.FindAsync(id);
+            if (office == null) return NotFound();
+            return office.Officeaddress;
+        }
     }
 }
