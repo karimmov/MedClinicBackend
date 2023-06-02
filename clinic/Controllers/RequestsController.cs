@@ -48,6 +48,8 @@ namespace clinic.Controllers
                 Office = data.Office,
                 Receptiondate = data.Date,
                 Analysistype = data.Analysistype,
+                AnalysistypeNavigation = _context.Analysistypes.Find(data.Analysistype),
+                OfficeNavigation = _context.Offices.Find(data.Office)
             };
 
             if (_context.Requests == null)

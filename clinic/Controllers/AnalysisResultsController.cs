@@ -23,7 +23,7 @@ namespace clinic.Controllers
             return Ok(await _context.Analysisresults.Where(t => t.Client == id).ToListAsync());
         }
 
-        [Authorize]
+        /*[Authorize]
         [HttpPost]
         public async Task<ActionResult> AddAnalysisResults(int[] analyzesId)
         {
@@ -43,6 +43,6 @@ namespace clinic.Controllers
             await _context.Analysisresults.AddRangeAsync(results);
             _context.SaveChanges();
             return Ok();
-        }
+        }*/
     }
 }
