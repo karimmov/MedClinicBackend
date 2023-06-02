@@ -20,7 +20,15 @@ namespace clinic.Controllers
         public async Task<ActionResult<IEnumerable<Analysisresult>>> GetAnalysisResults()
         {
             var id = int.Parse(User.Claims.Where(c => c.Type == "ClientId").Select(c => c.Value).FirstOrDefault());
-            return Ok(await _context.Analysisresults.Where(t => t.Client == id).ToListAsync());
+
+            var result = await _context.Analysisresults.Where(t => t.Client == id).ToListAsync();
+
+            foreach (var analysisresult in result)
+            {
+                analysisresult.AnalysistypeNavigation = _context.Analysistypes.Find(analysisresult.Analysistype);
+            }
+
+            return Ok(result);
         }
 
         /*[Authorize]

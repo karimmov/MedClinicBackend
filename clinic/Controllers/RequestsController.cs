@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using NuGet.Protocol;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace clinic.Controllers
@@ -32,7 +33,15 @@ namespace clinic.Controllers
         {
             var id = User.Claims.Where(t => t.Type == "ClientId").Select(t => t.Value).Single();
 
-            return await _context.Requests.Where(t => t.Client == int.Parse(id)).ToListAsync();
+            var result = await _context.Requests.Where(t => t.Client == int.Parse(id)).ToListAsync();
+
+            foreach (var request in result)
+            {
+                request.OfficeNavigation = _context.Offices.Find(request.Office);
+                request.AnalysistypeNavigation = _context.Analysistypes.Find(request.Analysistype);
+            }
+
+            return Ok(result);
 
         }
 
@@ -48,8 +57,6 @@ namespace clinic.Controllers
                 Office = data.Office,
                 Receptiondate = data.Date,
                 Analysistype = data.Analysistype,
-                AnalysistypeNavigation = _context.Analysistypes.Find(data.Analysistype),
-                OfficeNavigation = _context.Offices.Find(data.Office)
             };
 
             if (_context.Requests == null)
