@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using NuGet.Protocol;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace clinic.Controllers
 {
@@ -47,16 +49,29 @@ namespace clinic.Controllers
         {
             if (_context.Clients.ToList().Find(x => x.Email == email) != null)
                 return Problem("Пользователь с таким email уже зарегистрирован");
-            var id = _context.Clients.ToList().Last().Clientid + 1;
             await _context.Clients.AddAsync(new Client()
             {
-                Clientid = id,
                 Clientname = name,
                 Email = email,
-                Passwordhash = password,    
+                Passwordhash = CalculateMD5Hash(password),    
             });
             await _context.SaveChangesAsync();
             return Ok();
+        }
+
+        public string CalculateMD5Hash(string input)
+        {
+            // step 1, calculate MD5 hash from input
+            MD5 md5 = System.Security.Cryptography.MD5.Create();
+            byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
+            byte[] hash = md5.ComputeHash(inputBytes);
+            // step 2, convert byte array to hex string
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < hash.Length; i++)
+            {
+                sb.Append(hash[i].ToString("X2"));
+            }
+            return sb.ToString();
         }
 
         [HttpPut("{id}")]

@@ -9,6 +9,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using NuGet.Protocol;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace clinic.Controllers
 {
@@ -33,7 +35,8 @@ namespace clinic.Controllers
         [HttpPost("/api/authenticate")]
         public IActionResult Authenticate(string username, string password)
         {
-            var identity = GetIdentity(username, password);
+            var passwordhash = CalculateMD5Hash(password);
+            var identity = GetIdentity(username, passwordhash);
             if (identity.Result == null)
             {
                 return BadRequest(new { errorText = "Invalid username or password." });
@@ -57,6 +60,20 @@ namespace clinic.Controllers
             };
 
             return Ok(response.ToJson());
+        }
+        public string CalculateMD5Hash(string input)
+        {
+            // step 1, calculate MD5 hash from input
+            MD5 md5 = System.Security.Cryptography.MD5.Create();
+            byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
+            byte[] hash = md5.ComputeHash(inputBytes);
+            // step 2, convert byte array to hex string
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < hash.Length; i++)
+            {
+                sb.Append(hash[i].ToString("X2"));
+            }
+            return sb.ToString();
         }
 
         private async Task<ClaimsIdentity?> GetIdentity(string username, string password)
