@@ -42,7 +42,6 @@ namespace clinic.Controllers
         //    return client;
         //}
 
-        [Authorize]
         [HttpPost]
         public async Task<ActionResult> PostClient(string name, string email, string password)
         {

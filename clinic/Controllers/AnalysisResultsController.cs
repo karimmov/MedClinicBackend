@@ -26,29 +26,16 @@ namespace clinic.Controllers
             foreach (var analysisresult in result)
             {
                 analysisresult.AnalysistypeNavigation = _context.Analysistypes.Find(analysisresult.Analysistype);
+                analysisresult.OfficeNavigation = _context.Offices.Find(analysisresult.Office);
             }
 
             return Ok(result);
         }
 
-        /*[Authorize]
-        [HttpPost]
-        public async Task<ActionResult> AddAnalysisResults(int[] analyzesId)
+        /*[HttpPost]
+        public async Task<ActionResult> AddAnalysisResults(Analysisresult analysisresult)
         {
-            List<Analysisresult> results = new List<Analysisresult>();
-            var clientId = int.Parse(User.Claims.Where(c => c.Type == "ClientId").Select(c => c.Value).FirstOrDefault());
-            for (int i = 0; i < analyzesId.Length; i++)
-            {
-                results.Add(new Analysisresult
-                {
-                    Status = "Ожидается посещение",
-                    Client = clientId,
-                    Date = DateOnly.FromDateTime(DateTime.Now),
-                    Analysistype = analyzesId[i],
-                    AnalysistypeNavigation = _context.Analysistypes.Find(analyzesId[i])
-                });
-            };
-            await _context.Analysisresults.AddRangeAsync(results);
+            await _context.Analysisresults.AddRangeAsync(analysisresult);
             _context.SaveChanges();
             return Ok();
         }*/
